@@ -62,11 +62,38 @@ namespace EntryPoint
             return specialBuildings.OrderBy(v => Vector2.Distance(v, house));
         }
 
+        private static List<Vector2> split(List<Vector2> Vector2List, Vector2 house)
+        {
+            if (Vector2List.Count == 2)
+            {
+                IEnumerator<Vector2>  Vector2ListIEnumerator = Vector2List.GetEnumerator();
+                Vector2ListIEnumerator.MoveNext();
+                Vector2 LeftVector2List = Vector2ListIEnumerator.Current;
+                Vector2ListIEnumerator.MoveNext();
+                Vector2 RightVector2List = Vector2ListIEnumerator.Current;
+                return MergeLists(LeftVector2List,RightVector2List, house);
+            }
+            else
+            {
+                List<Vector2> SplitList = split(LeftVector2List, RightVector2List, house);
+                SplitList.GetEnumerator();
+                return MergeLists();
+            }
+        }
+
+        private static List<Vector2> MergeSort(List<Vector2> leftVector2List, List<Vector2> rightVector2List, Vector2 house)
+        {
+            
+        }
+
         private static List<Vector2> MergeSortList(List<Vector2> Vector2List, Vector2 house)
         {
 
             List<List<Vector2>> ListofLists = new List<List<Vector2>>();
             ListofLists.Add(Vector2List);
+
+
+
             IEnumerator<Vector2> emVector2 = Vector2List.GetEnumerator();
             IEnumerator<List<Vector2>> emList = ListofLists.GetEnumerator();
 
@@ -190,7 +217,7 @@ namespace EntryPoint
             for (int i = 0; i < LeftList.Count; i++)
             {
 
-                
+
                 float leftx = LeftEnumerator.Current.X;
                 float lefty = LeftEnumerator.Current.Y;
                 float rightx = RightEnumerator.Current.X;
