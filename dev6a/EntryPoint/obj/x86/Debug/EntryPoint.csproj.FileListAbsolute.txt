@@ -112,3 +112,6 @@ C:\Users\Hans\Documents\dev6a\dev6a\EntryPoint\bin\Windows\Debug\SharpDX.XInput.
 C:\Users\Hans\Documents\dev6a\dev6a\EntryPoint\bin\Windows\Debug\SharpDX.RawInput.xml
 C:\Users\Hans\Documents\dev6a\dev6a\EntryPoint\bin\Windows\Debug\SharpDX.Direct3D9.xml
 C:\Users\Hans\Documents\dev6a\dev6a\EntryPoint\obj\x86\Debug\EntryPoint.csprojResolveAssemblyReference.cache
+C:\Users\Hans\Desktop\dev6a\dev6a\EntryPoint\bin\Windows\Debug\EntryPoint.exe.config
+C:\Users\Hans\Desktop\dev6a\dev6a\EntryPoint\obj\x86\Debug\EntryPoint.exe
+C:\Users\Hans\Desktop\dev6a\dev6a\EntryPoint\obj\x86\Debug\EntryPoint.pdb
