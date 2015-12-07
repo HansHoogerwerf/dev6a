@@ -19,6 +19,7 @@ namespace EntryPoint
                 case "1":
                     using (var game = VirtualCity.RunAssignment1(SortSpecialBuildingsByDistance, fullscreen))
                         game.Run();
+                        System.Console.WriteLine(splittedTooOne);
                     break;
                 case "2":
                     using (var game = VirtualCity.RunAssignment2(FindSpecialBuildingsWithinDistanceFromHouse, fullscreen))
@@ -37,6 +38,8 @@ namespace EntryPoint
             }
             goto read_input;
         }
+        static int splittedTooOne = 0;
+
 
         private static IEnumerable<Vector2> SortSpecialBuildingsByDistance(Vector2 house, IEnumerable<Vector2> specialBuildings)
         {
@@ -47,31 +50,88 @@ namespace EntryPoint
 
             
             System.Console.WriteLine("specialB.count = " + specialBuildings.Count());
-            //split(specialBuildings, house);
-            //int counter = 0;
-            //List<Vector2> UnorderedLeftList = new List<Vector2>();
-            //List<Vector2> UnorderedRightList = new List<Vector2>();
-            //while (specialBuildings.Count() / 2 > counter && em.MoveNext())
-            //{
-            //    UnorderedLeftList.Add(em.Current);
-            //    //System.Console.WriteLine("Adding left item! Counter = " + counter);
-            //    counter++;
-            //}
-            //while (em.MoveNext())
-            //{
-            //    UnorderedRightList.Add(em.Current);
-            //    //System.Console.WriteLine("Adding right item! Counter = " + counter);
-            //    counter++;
-            //}
 
-            IEnumerable<Vector2> testlist = split(specialBuildings,house);
+            Vector2[] specialbuildingsarray = specialBuildings.ToArray();
+            int first = 0;
+            int last = specialBuildings.Count() - 1;
 
-            //IEnumerable<Vector2> testlist = MergeList(UnorderedLeftList, UnorderedRightList, house);
+            Vector2[] sortedbuildings = MergeSort(specialbuildingsarray, first, last, house);
 
-            System.Console.WriteLine("testlist.Count() = " + testlist.Count());
-
-            return testlist;
+            return sortedbuildings;
             //return specialBuildings.OrderBy(v => Vector2.Distance(v, house));
+        }
+
+        private static Vector2[] MergeSort(Vector2[] VectorArray, int MinValue, int MaxValue, Vector2 house)
+        {
+            Vector2[] returnarray = new Vector2[1];
+
+            
+            if (MinValue < MaxValue)
+            {
+                int Middle = (MinValue + MaxValue) / 2;
+                MergeSort(VectorArray, MinValue, Middle, house);
+                MergeSort(VectorArray, Middle + 1, MaxValue, house);
+                returnarray = Merge(VectorArray, MinValue, Middle, MaxValue, house);
+            }
+            return returnarray;
+        }
+
+        private static Vector2[] Merge(Vector2[] VectorArray, int Min, int Middle, int Max, Vector2 house)
+        {
+            int leftNumber = Middle - Min + 1;
+            int rightNumber = Max - Middle;
+            System.Console.WriteLine("leftnumber = " + leftNumber + " rightnumber = " + rightNumber);
+            System.Console.WriteLine("Min = " + Min + " Middle = " + Middle + "Max = " + Max);
+            Vector2[] left = new Vector2[leftNumber + 1];
+            Vector2[] right = new Vector2[rightNumber + 1];
+            int i = 0;
+            int j = 0;
+            for (i = 0; i < leftNumber; i++)
+            {
+                left[i] = VectorArray[Min + i];
+                
+            }
+
+            for (j = 0; j < rightNumber; j++)
+            {
+                right[j] = VectorArray[Middle +1 + j];
+                
+            }
+            left[leftNumber] = new Vector2(float.MaxValue, float.MaxValue);
+            right[rightNumber] = new Vector2(float.MaxValue, float.MaxValue);
+            i = 0;
+            j = 0;
+
+            double leftdifference = findSquaredDifference(house, left[i]);
+            double rightdifference = findSquaredDifference(house, right[j]);
+
+            for (int k = Min; k <= Max; k++)
+            {
+
+                if (leftdifference <= rightdifference)
+                {
+                    VectorArray[k] = left[i];
+                    i++;
+                    leftdifference = findSquaredDifference(house, left[i]);
+
+                }
+                else
+                {
+                    VectorArray[k] = right[j];
+                    j++;
+                    rightdifference = findSquaredDifference(house, right[j]);
+                }
+            }
+            return VectorArray;
+
+        }
+
+        private static double findSquaredDifference(Vector2 specialbuilding, Vector2 house)
+        {
+            float xLenght = specialbuilding.X - house.X;
+            float yLenght = specialbuilding.Y - house.Y;
+            float difference = (xLenght * xLenght) + (yLenght * yLenght);
+            return Math.Sqrt(Math.Pow(xLenght, 2) + Math.Pow(yLenght, 2));
         }
 
         private static IEnumerable<Vector2> split(IEnumerable<Vector2> Vector2List, Vector2 house)
@@ -83,6 +143,7 @@ namespace EntryPoint
             if (Vector2List.Count() == 1)
             {
                 System.Console.WriteLine("splitting = 1");
+                splittedTooOne++;
                 return Vector2List;
             }
 
@@ -261,8 +322,9 @@ namespace EntryPoint
                         {
                             MergeList.Add(RightEnumerator.Current);
                             rightcounter++;
-                            return MergeList;
+                            
                         }
+                        //return MergeList;
                     }
                 }
                 else if (maxright > rightcounter)
@@ -275,8 +337,9 @@ namespace EntryPoint
                         {
                             MergeList.Add(LeftEnumerator.Current);
                             leftcounter++;
-                            return MergeList;
+                            
                         }
+                        //return MergeList;
                     }
                 }
                 else
