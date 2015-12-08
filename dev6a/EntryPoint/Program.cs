@@ -19,7 +19,6 @@ namespace EntryPoint
                 case "1":
                     using (var game = VirtualCity.RunAssignment1(SortSpecialBuildingsByDistance, fullscreen))
                         game.Run();
-                        System.Console.WriteLine(splittedTooOne);
                     break;
                 case "2":
                     using (var game = VirtualCity.RunAssignment2(FindSpecialBuildingsWithinDistanceFromHouse, fullscreen))
@@ -38,20 +37,14 @@ namespace EntryPoint
             }
             goto read_input;
         }
-        static int splittedTooOne = 0;
 
 
         private static IEnumerable<Vector2> SortSpecialBuildingsByDistance(Vector2 house, IEnumerable<Vector2> specialBuildings)
         {
             System.Console.WriteLine("x and y: " + house.X + "," + house.Y);
-            IEnumerator<Vector2> em = specialBuildings.GetEnumerator();
-            //int counter = 0;
-//            List<Vector2> specialB = specialBuildings.ToList();
-
-            
-            System.Console.WriteLine("specialB.count = " + specialBuildings.Count());
 
             Vector2[] specialbuildingsarray = specialBuildings.ToArray();
+
             int first = 0;
             int last = specialBuildings.Count() - 1;
 
@@ -78,360 +71,60 @@ namespace EntryPoint
 
         private static Vector2[] Merge(Vector2[] VectorArray, int Min, int Middle, int Max, Vector2 house)
         {
-            int leftNumber = Middle - Min + 1;
-            int rightNumber = Max - Middle;
-            System.Console.WriteLine("leftnumber = " + leftNumber + " rightnumber = " + rightNumber);
-            System.Console.WriteLine("Min = " + Min + " Middle = " + Middle + "Max = " + Max);
-            Vector2[] left = new Vector2[leftNumber + 1];
-            Vector2[] right = new Vector2[rightNumber + 1];
+            int leftArraySize = Middle - Min + 1;
+            int rightArraySize = Max - Middle;
+            Vector2[] leftArray = new Vector2[leftArraySize + 1];
+            Vector2[] rightArray = new Vector2[rightArraySize + 1];
             int i = 0;
             int j = 0;
-            for (i = 0; i < leftNumber; i++)
+            for (i = 0; i < leftArraySize; i++)
             {
-                left[i] = VectorArray[Min + i];
+                leftArray[i] = VectorArray[Min + i];
                 
             }
 
-            for (j = 0; j < rightNumber; j++)
+            for (j = 0; j < rightArraySize; j++)
             {
-                right[j] = VectorArray[Middle +1 + j];
+                rightArray[j] = VectorArray[Middle +1 + j];
                 
             }
-            left[leftNumber] = new Vector2(float.MaxValue, float.MaxValue);
-            right[rightNumber] = new Vector2(float.MaxValue, float.MaxValue);
+            leftArray[leftArraySize] = new Vector2(float.MaxValue, float.MaxValue);
+            rightArray[rightArraySize] = new Vector2(float.MaxValue, float.MaxValue);
             i = 0;
             j = 0;
 
-            double leftdifference = findSquaredDifference(house, left[i]);
-            double rightdifference = findSquaredDifference(house, right[j]);
+            double leftdifference = distance(house, leftArray[i]);
+            double rightdifference = distance(house, rightArray[j]);
 
             for (int k = Min; k <= Max; k++)
             {
 
                 if (leftdifference <= rightdifference)
                 {
-                    VectorArray[k] = left[i];
+                    VectorArray[k] = leftArray[i];
                     i++;
-                    leftdifference = findSquaredDifference(house, left[i]);
+                    leftdifference = distance(house, leftArray[i]);
 
                 }
                 else
                 {
-                    VectorArray[k] = right[j];
+                    VectorArray[k] = rightArray[j];
                     j++;
-                    rightdifference = findSquaredDifference(house, right[j]);
+                    rightdifference = distance(house, rightArray[j]);
                 }
             }
             return VectorArray;
 
         }
 
-        private static double findSquaredDifference(Vector2 specialbuilding, Vector2 house)
+        private static double distance(Vector2 specialbuilding, Vector2 house)
         {
             float xLenght = specialbuilding.X - house.X;
             float yLenght = specialbuilding.Y - house.Y;
             float difference = (xLenght * xLenght) + (yLenght * yLenght);
-            return Math.Sqrt(Math.Pow(xLenght, 2) + Math.Pow(yLenght, 2));
+            return difference;
         }
 
-        private static IEnumerable<Vector2> split(IEnumerable<Vector2> Vector2List, Vector2 house)
-        {
-            //System.Console.WriteLine("Start split!");
-
-            IEnumerator<Vector2> Vector2ListIEnumerator = Vector2List.GetEnumerator();
-
-            if (Vector2List.Count() == 1)
-            {
-                System.Console.WriteLine("splitting = 1");
-                splittedTooOne++;
-                return Vector2List;
-            }
-
-
-            int counter = 0;
-            List<Vector2> UnorderedLeftList = new List<Vector2>();
-            List<Vector2> UnorderedRightList = new List<Vector2>();
-            while (Vector2List.Count() / 2 > counter && Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedLeftList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding left item! Counter = " + counter);
-                counter++;
-            }
-            while (Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedRightList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding right item! Counter = " + counter);
-                counter++;
-            }
-            System.Console.WriteLine("splitting = " + counter);
-
-            //System.Console.WriteLine("UnorderedLeftList.Count = " +  UnorderedLeftList.Count);
-            //System.Console.WriteLine("UnorderedRightList.Count = " + UnorderedRightList.Count);
-
-
-            IEnumerable<Vector2> OrderedLeftList = splitleft(UnorderedLeftList, house);
-            System.Console.WriteLine("Done left split!  count = " + OrderedLeftList.Count());
-
-
-            IEnumerable<Vector2> OrderedRightList = splitright(UnorderedRightList, house);
-            System.Console.WriteLine("Done right split! count = " + OrderedRightList.Count());
-
-            System.Console.WriteLine("Final right split!  count = " + OrderedRightList.Count());
-            System.Console.WriteLine("Final left split!  count = " + OrderedLeftList.Count());
-
-            return MergeList(OrderedLeftList, OrderedRightList, house);
-        }
-
-        private static IEnumerable<Vector2> splitleft(IEnumerable<Vector2> Vector2List, Vector2 house)
-        {
-            //System.Console.WriteLine("Start split!");
-
-            IEnumerator<Vector2> Vector2ListIEnumerator = Vector2List.GetEnumerator();
-
-            if (Vector2List.Count() == 1)
-            {
-                System.Console.WriteLine("splitting = 1");
-                return Vector2List;
-            }
-
-
-            int counter = 0;
-            List<Vector2> UnorderedLeftList = new List<Vector2>();
-            List<Vector2> UnorderedRightList = new List<Vector2>();
-            while (Vector2List.Count() / 2 > counter && Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedLeftList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding left item! Counter = " + counter);
-                counter++;
-            }
-            while (Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedRightList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding right item! Counter = " + counter);
-                counter++;
-            }
-            System.Console.WriteLine("splitting = " + counter);
-
-            //System.Console.WriteLine("UnorderedLeftList.Count = " +  UnorderedLeftList.Count);
-            //System.Console.WriteLine("UnorderedRightList.Count = " + UnorderedRightList.Count);
-
-
-            IEnumerable<Vector2> OrderedLeftList = splitleft(UnorderedLeftList, house);
-            //System.Console.WriteLine("Done left split! OrderedLeftList.Count = " + OrderedLeftList.Count());
-
-            IEnumerable<Vector2> OrderedRightList = splitright(UnorderedRightList, house);
-            //System.Console.WriteLine("Done splitting! OrderedRightList.Count = " + OrderedRightList.Count() + " OrderedLeftList.Count = " + OrderedLeftList.Count());
-
-            return MergeList(OrderedLeftList, OrderedRightList, house);
-        }
-
-        private static IEnumerable<Vector2> splitright(IEnumerable<Vector2> Vector2List, Vector2 house)
-        {
-            //System.Console.WriteLine("Start split!");
-
-            IEnumerator<Vector2> Vector2ListIEnumerator = Vector2List.GetEnumerator();
-
-            if (Vector2List.Count() == 1)
-            {
-                System.Console.WriteLine("splitting = 1");
-                return Vector2List;
-            }
-
-
-            int counter = 0;
-            List<Vector2> UnorderedLeftList = new List<Vector2>();
-            List<Vector2> UnorderedRightList = new List<Vector2>();
-            while (Vector2List.Count() / 2 > counter && Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedLeftList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding left item! Counter = " + counter);
-                counter++;
-            }
-            while (Vector2ListIEnumerator.MoveNext())
-            {
-                UnorderedRightList.Add(Vector2ListIEnumerator.Current);
-                //System.Console.WriteLine("Adding right item! Counter = " + counter);
-                counter++;
-            }
-            System.Console.WriteLine("splitting = " + counter);
-
-            //System.Console.WriteLine("UnorderedLeftList.Count = " +  UnorderedLeftList.Count);
-            //System.Console.WriteLine("UnorderedRightList.Count = " + UnorderedRightList.Count);
-
-
-            IEnumerable<Vector2> OrderedLeftList = splitleft(UnorderedLeftList, house);
-            //System.Console.WriteLine("Done left split!");
-
-            IEnumerable<Vector2> OrderedRightList = splitright(UnorderedRightList, house);
-            //System.Console.WriteLine("Done right split!");
-
-            return MergeList(OrderedLeftList, OrderedRightList, house);
-        }
-
-
-        private static List<Vector2> MergeList(IEnumerable<Vector2> LeftList, IEnumerable<Vector2> RightList, Vector2 house)
-        {
-            IEnumerator<Vector2> LeftEnumerator = LeftList.GetEnumerator();
-            IEnumerator<Vector2> RightEnumerator = RightList.GetEnumerator();
-
-            int maxleft = LeftList.Count();
-            int maxright = RightList.Count();
-
-            int leftcounter = 0;
-            int rightcounter = 0;
-
-            List<Vector2> MergeList = new List<Vector2>();
-
-            LeftEnumerator.MoveNext();
-            RightEnumerator.MoveNext();
-
-            float houseY = house.Y;
-            float houseX = house.X;
-
-
-            int shouldMerge = LeftList.Count() + RightList.Count() + 1000;
-            
-
-            for (int i = 0; i <= shouldMerge; i++)
-            {
-                System.Console.WriteLine("Merging number =  " + (i+1));
-
-                float leftX = LeftEnumerator.Current.X;
-                float leftY = LeftEnumerator.Current.Y;
-
-                float rightX = RightEnumerator.Current.X;
-                float rightY = RightEnumerator.Current.Y;
-
-                float leftXDifference = houseX - leftX;
-                float leftYDifference = houseY - leftY;
-
-                float leftDifference = (leftXDifference * leftXDifference) + (leftYDifference * leftYDifference);
-
-                float rightXDifference = houseX - rightX;
-                float rightYDifference = houseY - rightY;
-
-                float rightDifference = (rightXDifference * rightXDifference) + (rightYDifference * rightYDifference);
-
-                if (leftDifference <= rightDifference && maxleft > leftcounter)
-                {
-                    leftcounter++;
-                    MergeList.Add(LeftEnumerator.Current);
-                    if (!LeftEnumerator.MoveNext())
-                    {
-                        while (RightEnumerator.MoveNext())
-                        {
-                            MergeList.Add(RightEnumerator.Current);
-                            rightcounter++;
-                            
-                        }
-                        //return MergeList;
-                    }
-                }
-                else if (maxright > rightcounter)
-                {
-                    MergeList.Add(RightEnumerator.Current);
-                    rightcounter++;
-                    if (!RightEnumerator.MoveNext())
-                    {
-                        while (LeftEnumerator.MoveNext())
-                        {
-                            MergeList.Add(LeftEnumerator.Current);
-                            leftcounter++;
-                            
-                        }
-                        //return MergeList;
-                    }
-                }
-                else
-                {
-                    return MergeList;
-                }
-            }
-
-            return MergeList;
-
-        }
-
-
-        private static List<Vector2> MergeLists(IEnumerable<Vector2> LeftList, IEnumerable<Vector2> RightList, Vector2 house)
-        {
-            //System.Console.WriteLine("start mergelist");
-            List<Vector2> MergeList = new List<Vector2>();
-            IEnumerator<Vector2> LeftEnumerator = LeftList.GetEnumerator();
-            IEnumerator<Vector2> RightEnumerator = RightList.GetEnumerator();
-
-            float housex = house.X;
-            float housey = house.Y;
-            int shouldMerge = LeftList.Count() + RightList.Count();
-            System.Console.WriteLine("Should merge = " + shouldMerge);
-           
-            LeftEnumerator.MoveNext();
-            RightEnumerator.MoveNext();
-            for (int i = 0; i <= shouldMerge; i++)
-            {
-
-                
-                float leftx = LeftEnumerator.Current.X;
-                float lefty = LeftEnumerator.Current.Y;
-                float rightx = RightEnumerator.Current.X;
-                float righty = RightEnumerator.Current.Y;
-                if (rightx == 0&& righty == 0)
-                {
-                    System.Console.WriteLine("detected zero value");
-                    break;
-                }
-
-                if (leftx == 0 && lefty == 0)
-                {
-                    System.Console.WriteLine("detected zero value");
-                    break;
-                }
-
-                //System.Console.WriteLine("leftx = " + leftx + "lefty = " + lefty + "rightx = " + rightx + "righty = " + righty);
-
-
-                double leftDistance = Math.Sqrt(Math.Pow(leftx - housex, 2)) + Math.Sqrt(Math.Pow(lefty - housey, 2));
-                double rightDistance = Math.Sqrt(Math.Pow(rightx - housex, 2)) + Math.Sqrt(Math.Pow(righty - housey, 2));
-
-                //System.Console.WriteLine("leftDistance = " + leftDistance);
-                //System.Console.WriteLine("rightDistance = " + rightDistance);
-
-                if (leftDistance <= rightDistance)
-                {
-                    //System.Console.WriteLine("leftDistance = " + leftDistance + " <= rightDistance = " + rightDistance);
-                    MergeList.Add(LeftEnumerator.Current);
-                    
-                    if (!LeftEnumerator.MoveNext())
-                    {
-                        while (RightEnumerator.MoveNext())
-                        {
-                            System.Console.WriteLine("adding all right vectors");
-                            MergeList.Add(RightEnumerator.Current);
-                            return MergeList;
-                        }
-
-                    }
-                }
-                else
-                {
-                    //System.Console.WriteLine("leftDistance = " + leftDistance + " > rightDistance = " + rightDistance);
-                    MergeList.Add(RightEnumerator.Current);
-                    if (!RightEnumerator.MoveNext())
-                    {
-                        while (LeftEnumerator.MoveNext())
-                        {
-                            MergeList.Add(LeftEnumerator.Current);
-                            System.Console.WriteLine("adding all left vectors");
-                            return MergeList;
-                            
-                        }
-                    }
-
-                }
-            }
-            System.Console.WriteLine("Merging =  " + MergeList.Count());
-            return MergeList;
-        }
 
 
 
