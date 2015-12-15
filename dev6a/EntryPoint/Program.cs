@@ -117,10 +117,10 @@ namespace EntryPoint
 
         }
 
-        private static double distance(Vector2 specialbuilding, Vector2 house)
+        private static double distance(Vector2 FirstBuilding, Vector2 SecondBuilding)
         {
-            float xLenght = specialbuilding.X - house.X;
-            float yLenght = specialbuilding.Y - house.Y;
+            float xLenght = FirstBuilding.X - SecondBuilding.X;
+            float yLenght = FirstBuilding.Y - SecondBuilding.Y;
             float difference = (xLenght * xLenght) + (yLenght * yLenght);
             return difference;
         }
@@ -132,6 +132,13 @@ namespace EntryPoint
           IEnumerable<Vector2> specialBuildings,
           IEnumerable<Tuple<Vector2, float>> housesAndDistances)
         {
+            IEnumerator housesAndDistancesEnumerator = housesAndDistances.GetEnumerator();
+            while (housesAndDistancesEnumerator.MoveNext())
+            {
+                Console.WriteLine("found a house with distance!");
+                Console.WriteLine(housesAndDistancesEnumerator.Current.ToString()); 
+            }
+
             return
                 from h in housesAndDistances
                 select
