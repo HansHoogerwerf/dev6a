@@ -121,7 +121,7 @@ namespace EntryPoint
         {
             float xLenght = FirstBuilding.X - SecondBuilding.X;
             float yLenght = FirstBuilding.Y - SecondBuilding.Y;
-            float difference = (xLenght * xLenght) + (yLenght * yLenght);
+            double difference = Math.Sqrt((xLenght * xLenght) + (yLenght * yLenght));
             return difference;
         }
 
