@@ -132,6 +132,15 @@ namespace EntryPoint
           IEnumerable<Vector2> specialBuildings,
           IEnumerable<Tuple<Vector2, float>> housesAndDistances)
         {
+
+            IEnumerator specialBuildingEnumerator = specialBuildings.GetEnumerator();
+            while (specialBuildingEnumerator.MoveNext())
+            {
+                Console.WriteLine("found a specialbuilding!");
+                Console.WriteLine(specialBuildingEnumerator.Current.ToString());
+            }
+
+
             IEnumerator housesAndDistancesEnumerator = housesAndDistances.GetEnumerator();
             while (housesAndDistancesEnumerator.MoveNext())
             {
