@@ -13,7 +13,7 @@ namespace EntryPoint
         static void Main()
         {
             var fullscreen = false;
-        read_input:
+            read_input:
             switch (Microsoft.VisualBasic.Interaction.InputBox("Which assignment shall run next? (1, 2, 3, 4, or q for quit)", "Choose assignment", VirtualCity.GetInitialValue()))
             {
                 case "1":
@@ -58,7 +58,7 @@ namespace EntryPoint
         {
             Vector2[] returnarray = new Vector2[1];
 
-            
+
             if (MinValue < MaxValue)
             {
                 int Middle = (MinValue + MaxValue) / 2;
@@ -80,21 +80,21 @@ namespace EntryPoint
             for (i = 0; i < leftArraySize; i++)
             {
                 leftArray[i] = VectorArray[Min + i];
-                
+
             }
 
             for (j = 0; j < rightArraySize; j++)
             {
-                rightArray[j] = VectorArray[Middle +1 + j];
-                
+                rightArray[j] = VectorArray[Middle + 1 + j];
+
             }
             leftArray[leftArraySize] = new Vector2(float.MaxValue, float.MaxValue);
             rightArray[rightArraySize] = new Vector2(float.MaxValue, float.MaxValue);
             i = 0;
             j = 0;
 
-            double leftdifference = distance(house, leftArray[i]);
-            double rightdifference = distance(house, rightArray[j]);
+            double leftdifference = Distance(house, leftArray[i]);
+            double rightdifference = Distance(house, rightArray[j]);
 
             for (int k = Min; k <= Max; k++)
             {
@@ -103,21 +103,21 @@ namespace EntryPoint
                 {
                     VectorArray[k] = leftArray[i];
                     i++;
-                    leftdifference = distance(house, leftArray[i]);
+                    leftdifference = Distance(house, leftArray[i]);
 
                 }
                 else
                 {
                     VectorArray[k] = rightArray[j];
                     j++;
-                    rightdifference = distance(house, rightArray[j]);
+                    rightdifference = Distance(house, rightArray[j]);
                 }
             }
             return VectorArray;
 
         }
 
-        private static double distance(Vector2 FirstBuilding, Vector2 SecondBuilding)
+        private static double Distance(Vector2 FirstBuilding, Vector2 SecondBuilding)
         {
             float xLenght = FirstBuilding.X - SecondBuilding.X;
             float yLenght = FirstBuilding.Y - SecondBuilding.Y;
@@ -132,20 +132,31 @@ namespace EntryPoint
           IEnumerable<Vector2> specialBuildings,
           IEnumerable<Tuple<Vector2, float>> housesAndDistances)
         {
-
-            IEnumerator specialBuildingEnumerator = specialBuildings.GetEnumerator();
-            while (specialBuildingEnumerator.MoveNext())
+            IEnumerator<Vector2> specialBuildingEnumerator = specialBuildings.GetEnumerator();
+            int count = 0;
+            if (specialBuildingEnumerator.MoveNext())
             {
-                Console.WriteLine("found a specialbuilding!");
-                Console.WriteLine(specialBuildingEnumerator.Current.ToString());
+                count++;
+                Node rootNode = new Node { Value = specialBuildingEnumerator.Current };
+                KdTree specialBuildingsKdTree = new KdTree(rootNode);
+                while (specialBuildingEnumerator.MoveNext())
+                {
+                    count++;
+                    specialBuildingsKdTree.Insert(new Node { Value = specialBuildingEnumerator.Current });
+                }
+                Console.WriteLine("Count = " + count);
             }
+
+
+
+
 
 
             IEnumerator housesAndDistancesEnumerator = housesAndDistances.GetEnumerator();
             while (housesAndDistancesEnumerator.MoveNext())
             {
-                Console.WriteLine("found a house with distance!");
-                Console.WriteLine(housesAndDistancesEnumerator.Current.ToString()); 
+                Console.WriteLine("found a house with Distance!");
+                Console.WriteLine(housesAndDistancesEnumerator.Current.ToString());
             }
 
             return
