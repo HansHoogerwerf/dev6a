@@ -134,11 +134,12 @@ namespace EntryPoint
         {
             IEnumerator<Vector2> specialBuildingEnumerator = specialBuildings.GetEnumerator();
             int count = 0;
+            KdTree specialBuildingsKdTree = new KdTree(new Node());
             if (specialBuildingEnumerator.MoveNext())
             {
                 count++;
                 Node rootNode = new Node { Value = specialBuildingEnumerator.Current };
-                KdTree specialBuildingsKdTree = new KdTree(rootNode);
+                specialBuildingsKdTree = new KdTree(rootNode);
                 while (specialBuildingEnumerator.MoveNext())
                 {
                     count++;
@@ -148,23 +149,30 @@ namespace EntryPoint
             }
 
 
+            IEnumerator<Tuple<Vector2, float>> housesAndDistancesEnumerator = housesAndDistances.GetEnumerator();
 
+            List<List<Vector2>> returnList = new List<List<Vector2>>();
 
-
-
-            IEnumerator housesAndDistancesEnumerator = housesAndDistances.GetEnumerator();
             while (housesAndDistancesEnumerator.MoveNext())
             {
+                Vector2 house = housesAndDistancesEnumerator.Current.Item1;
+                float offset = housesAndDistancesEnumerator.Current.Item2;
+
+                returnList.Add(specialBuildingsKdTree.FindBetweenXandYVector2s(house, offset));
+
+
                 Console.WriteLine("found a house with Distance!");
                 Console.WriteLine(housesAndDistancesEnumerator.Current.ToString());
             }
 
-            return
-                from h in housesAndDistances
-                select
-                  from s in specialBuildings
-                  where Vector2.Distance(h.Item1, s) <= h.Item2
-                  select s;
+            return returnList;
+
+//            return
+//                from h in housesAndDistances
+//                select
+//                  from s in specialBuildings
+//                  where Vector2.Distance(h.Item1, s) <= h.Item2
+//                  select s;
         }
 
         private static IEnumerable<Tuple<Vector2, Vector2>> FindRoute(Vector2 startingBuilding,
