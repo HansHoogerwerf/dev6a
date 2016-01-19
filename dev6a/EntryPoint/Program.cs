@@ -117,11 +117,12 @@ namespace EntryPoint
 
         }
 
-        private static double Distance(Vector2 FirstBuilding, Vector2 SecondBuilding)
+        public static double Distance(Vector2 FirstBuilding, Vector2 SecondBuilding)
         {
             float xLenght = FirstBuilding.X - SecondBuilding.X;
             float yLenght = FirstBuilding.Y - SecondBuilding.Y;
             double difference = Math.Sqrt((xLenght * xLenght) + (yLenght * yLenght));
+
             return difference;
         }
 
@@ -158,11 +159,11 @@ namespace EntryPoint
                 Vector2 house = housesAndDistancesEnumerator.Current.Item1;
                 float offset = housesAndDistancesEnumerator.Current.Item2;
 
-                returnList.Add(specialBuildingsKdTree.FindBetweenXandYVector2s(house, offset));
+                returnList.Add(specialBuildingsKdTree.Find(house, offset));
 
 
-                Console.WriteLine("found a house with Distance!");
-                Console.WriteLine(housesAndDistancesEnumerator.Current.ToString());
+                //Console.WriteLine("found a house with Distance!");
+                //Console.WriteLine(housesAndDistancesEnumerator.Current.ToString());
             }
 
             return returnList;

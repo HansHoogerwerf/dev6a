@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.CompilerServices;
@@ -11,13 +13,136 @@ namespace EntryPoint
     class KdTree
     {
         public Node Root { get; set; }
+        private List<Vector2> NodeList = new List<Vector2>();
 
         public KdTree(Node root)
         {
             this.Root = root;
             root.CompareX = true;
             root.Level = 0;
+            root.LeftNode = null;
+            root.RightNode = null;
+            root.ParentNode = null;
         }
+
+        public List<Vector2> Find(Vector2 house, float offset)
+        {
+            return FindNodes(house, offset, this.Root);
+        }
+
+        
+
+        private List<Vector2> FindNodes(Vector2 house, float offset, Node node)
+        {
+//            if (Vector2.Distance(node.Value, house) <= offset)
+//            {
+//                NodeList.Add(node.Value);
+//            }
+//            if (node.LeftNode != null)
+//            {
+//                FindNodes(house, offset, node.LeftNode);
+//            }
+//
+//            if (node.RightNode != null)
+//            {
+//                FindNodes(house, offset, node.RightNode);
+//            }
+//            return NodeList;
+
+
+//            Console.WriteLine(house.ToString());
+//            Console.WriteLine(node.ToString());
+//            Console.WriteLine("Distance = " +  Program.Distance(node.Value, house));
+//            Console.WriteLine("Offset = " + offset);
+
+
+            if (Program.Distance(node.Value, house) <= offset)
+            {
+                Console.WriteLine("House in offset!");
+                NodeList.Add(node.Value);
+                if (node.LeftNode != null)
+                {
+                    FindNodes(house, offset, node.LeftNode);
+                }
+                if (node.RightNode != null)
+                {
+                    FindNodes(house, offset, node.RightNode);
+                }    
+
+            }
+            else
+            {
+
+                if (node.CompareX)
+                {
+                    if (node.Value.X <= (house.X + offset) && node.Value.X >= (house.X - offset))
+                    {
+                        if (node.LeftNode != null)
+                        {
+                            FindNodes(house, offset, node.LeftNode);
+                        }
+                        if (node.RightNode != null)
+                        {
+                            FindNodes(house, offset, node.RightNode);
+                        }
+                    }
+                    else if (node.Value.X >= (house.X + offset))
+                    {
+                        if (node.LeftNode != null)
+                        {
+                            FindNodes(house, offset, node.LeftNode);
+                        }
+                        
+
+                    }
+                    else
+                    {
+                        if (node.RightNode != null)
+                        {
+                            FindNodes(house, offset, node.RightNode);
+                        }
+                        
+                    }
+
+                }
+                else
+                {
+                    if (node.Value.Y <= (house.Y + offset) && node.Value.Y >= (house.Y - offset))
+                    {
+                        if (node.LeftNode != null)
+                        {
+                            FindNodes(house, offset, node.LeftNode);
+                        }
+                        if (node.RightNode != null)
+                        {
+                            FindNodes(house, offset, node.RightNode);
+                        }
+                    }
+                    else if (node.Value.Y >= (house.Y + offset))
+                    {
+                        if (node.LeftNode != null)
+                        {
+                            FindNodes(house, offset, node.LeftNode);
+                        }
+                        
+
+                    }
+                    else
+                    {
+                        if (node.RightNode != null)
+                        {
+                            FindNodes(house, offset, node.RightNode);
+                        }
+                    }
+
+                }
+            }
+
+            return NodeList;
+        }
+
+
+
 
         public List<Vector2> FindBetweenXandYVector2s(Vector2 house, float offset)
         {
@@ -89,7 +214,7 @@ namespace EntryPoint
                 int level = compareNode.Level;
                 if (compareNode.CompareX)
                 {
-                    if (compareNode.Value.X <= node.Value.X)
+                    if (compareNode.Value.X >= node.Value.X)
                     {
                         if (compareNode.LeftNode == null)
                         {
@@ -118,7 +243,7 @@ namespace EntryPoint
                 }
                 else
                 {
-                    if (compareNode.Value.Y <= node.Value.Y)
+                    if (compareNode.Value.Y >= node.Value.Y)
                     {
                         if (compareNode.LeftNode == null)
                         {
@@ -148,9 +273,12 @@ namespace EntryPoint
 
                 node.CompareX = !compareX;
                 node.ParentNode = compareNode;
+                node.LeftNode = null;
+                node.RightNode = null;
                 node.Level = level + 1;
+
             }
-            Console.WriteLine(node.ToString());
+            //Console.WriteLine(node.ToString());
         }
     }
 
@@ -162,12 +290,39 @@ namespace EntryPoint
         public Node RightNode { get; set; }
         public int Level { get; set; }
         public Vector2 Value { get; set; }
+        
         public override string ToString()
         {
             string returnString = "Node {";
             returnString += " CompareX = " + CompareX.ToString();
             returnString += " Value = " + Value.ToString();
             returnString += " Level = " + Level;
+            if(ParentNode != null)
+            {
+                returnString += " ParentNode.Value = " + ParentNode.Value;
+            }
+            else
+            {
+                returnString += " ParentNode.Value = null";
+            }
+            if (LeftNode != null)
+            {
+                returnString += " LeftNode.Value = " + LeftNode.Value;
+            }
+            else
+            {
+                returnString += " LeftNode.Value = null";
+            }
+            if (RightNode != null)
+            {
+                returnString += " RightNode.Value = " + RightNode.Value;
+            }
+            else
+            {
+                returnString += " RightNode.Value = null";
+            }
+
+
             returnString += " }";
 
             return returnString;
