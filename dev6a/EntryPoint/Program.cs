@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace EntryPoint
 {
@@ -179,7 +180,52 @@ namespace EntryPoint
         private static IEnumerable<Tuple<Vector2, Vector2>> FindRoute(Vector2 startingBuilding,
           Vector2 destinationBuilding, IEnumerable<Tuple<Vector2, Vector2>> roads)
         {
-            var startingRoad = roads.Where(x => x.Item1.Equals(startingBuilding)).First();
+
+
+            var startingRoad = roads.First(x => x.Item1.Equals(startingBuilding));
+
+            List<Vector2> vectorList = new List<Vector2>();
+            List<Vertice> vertices = new List<Vertice>();
+
+            foreach (var tuple in roads)
+            {
+                if (!vectorList.Contains(tuple.Item1))
+                {
+                    vectorList.Add(tuple.Item1); 
+                }
+                if (!vectorList.Contains(tuple.Item2))
+                {
+                    vectorList.Add(tuple.Item2);
+                }
+
+            }
+
+            Console.WriteLine("vectors = " + vectorList.Count);
+
+            foreach (var vector in vectorList)
+            {
+                Vertice vertice = new Vertice(vector);
+                vertice.Distance = Double.MaxValue;
+                vertices.Add(vertice);
+            }
+
+            Console.WriteLine("vertices = " + vertices.Count);
+
+            Vertice startingVertice = vertices.First(v => v.Vector1.Equals(startingBuilding));
+
+            startingVertice.Distance = 0;
+
+            List<Vertice> verticeList = vertices;
+
+            foreach (var vertice in vertices)
+            {
+               
+                Vertice currentVertice = vertices.Min(v => vertice);
+                Console.WriteLine("Vector2 = " + currentVertice.Vector1);
+                Console.WriteLine("Distance = " + currentVertice.Distance);
+            }
+
+
             List<Tuple<Vector2, Vector2>> fakeBestPath = new List<Tuple<Vector2, Vector2>>() { startingRoad };
             var prevRoad = startingRoad;
             for (int i = 0; i < 30; i++)
